@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Species Color Showcase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        label {
+            font-size: 18px;
+            color: #333;
+        }
+
+        input[type="number"] {
+            width: 60px; /* Adjusted width for two-digit numbers */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #marker-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .color-marker {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 2px solid #333;
+            margin: 10px;
+        }
+
+        .color-marker:hover {
+            background-color: #333;
+        }
+
+        canvas {
+    border: 1px solid #ccc;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Species Color Showcase</h1>
+        <label for="numSpecies">Number of species:</label>
+        <input type="number" id="numSpecies" min="1" max="99">
+        <button onclick="generateMarkers()">Generate</button>
+        <div id="marker-container"></div>
+
+    </div>
+
+
+    <script>
+
+
+        function generateMarkers() {
+            const numSpecies = parseInt(document.getElementById('numSpecies').value);
+
+            
+            const colorScale = [
+    { r: 255, g: 0,   b: 0   }, // red
+    { r: 65, g: 32,   b: 0   }, // maroon
+    { r: 255, g: 128, b: 0   }, // orange
+    { r: 255, g: 255, b: 0   }, // yellow
+    { r: 65, g: 200, b: 0   }, // green
+    { r: 0,   g: 50, b: 150 }, // cyan
+    { r: 0,   g: 191, b: 255 }, // blue        
+];
+
+
+
+
+            const markerContainer = document.getElementById('marker-container');
+            markerContainer.innerHTML = '';
+
+            for (let i = 0; i < numSpecies; i++) {
+                const color = getColorForIndex(i, numSpecies, colorScale);
+                const colorMarker = document.createElement('div');
+                colorMarker.className = 'color-marker';
+                colorMarker.style.backgroundColor = color;
+                markerContainer.appendChild(colorMarker);
+            }
+        }
+
+        
+        function getColorForIndex(index, numSpecies, colorScale) {
+            if (numSpecies === 1) {
+                return `rgb(${colorScale[0].r}, ${colorScale[0].g}, ${colorScale[0].b})`;
+            }
+
+            const segment = (numSpecies - 1) / (colorScale.length - 1);
+            const lowerIndex = Math.floor(index / segment);
+            const upperIndex = Math.min(lowerIndex + 1, colorScale.length - 1);
+            const t = (index - lowerIndex * segment) / segment;
+
+            if (!colorScale[lowerIndex] || !colorScale[upperIndex]) {
+                console.error('Color scale index out of bounds:', { lowerIndex, upperIndex, colorScale });
+                return 'black';  // Return a default color if there's an error
+            }
+
+            const r = colorScale[lowerIndex].r + (colorScale[upperIndex].r - colorScale[lowerIndex].r) * t;
+            const g = colorScale[lowerIndex].g + (colorScale[upperIndex].g - colorScale[lowerIndex].g) * t;
+            const b = colorScale[lowerIndex].b + (colorScale[upperIndex].b - colorScale[lowerIndex].b) * t;
+
+            return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+        }
+    </script>
+</body>
+</html>
